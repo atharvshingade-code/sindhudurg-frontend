@@ -1,23 +1,130 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState, useEffect } from "react";
+import { supabase } from "./supabase";
+import Login from "./Login";
+import DistrictSummary from "./DistrictSummary";
+import TalukaTable from "./TalukaTable";
+import PendingTalukas from "./PendingTalukas";
+import MonthSelector from "./MonthSelector";
+import TalukaForm from "./TalukaForm";
+import "./App.css";
 
 function App() {
+  const [user, setUser] = useState(null);
+  const [profile, setProfile] = useState(null);
+  const [month, setMonth] = useState(10);
+  const [year, setYear] = useState(2025);
+
+  const logout = async () => {
+    await supabase.auth.signOut();
+    window.location.reload();
+  };
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      setUser(data.session?.user || null);
+    });
+
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user || null);
+    });
+
+    return () => listener.subscription.unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    if (!user) return;
+
+    supabase
+      .rpc("get_my_profile")
+      .then(({ data, error }) => {
+        if (error) console.error(error);
+        else setProfile(data[0]);
+      });
+  }, [user]);
+
+  if (!user) {
+    return <Login setUser={setUser} />;
+  }
+
+  if (!profile) {
+    return <p>Loading profile…</p>;
+  }
+
+  // ---------------- TALUKA VIEW ----------------
+  if (profile.role === "taluka") {
+    return (
+      <div style={{ padding: 30 }}>
+        <div style={{ textAlign: "right" }}>
+          <button
+            onClick={logout}
+            style={{
+              padding: "6px 14px",
+              background: "#b71c1c",
+              color: "white",
+              border: "none",
+              borderRadius: "4px",
+              cursor: "pointer"
+            }}
+          >
+            Logout
+          </button>
+        </div>
+
+        <h2>Taluka Monthly Data Entry</h2>
+        <p>Taluka ID: {profile.taluka_id}</p>
+        <TalukaForm talukaId={profile.taluka_id} />
+      </div>
+    );
+  }
+
+  // ---------------- DISTRICT ADMIN VIEW ----------------
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
+    <div className="container">
+      <div style={{ textAlign: "right" }}>
+        <button
+          onClick={logout}
+          style={{
+            padding: "6px 14px",
+            background: "#b71c1c",
+            color: "white",
+            border: "none",
+            borderRadius: "4px",
+            cursor: "pointer"
+          }}
         >
-          Learn React
-        </a>
-      </header>
+          Logout
+        </button>
+      </div>
+
+      <h1>
+        Sindhudurg District Education Office<br />
+        Monthly Staff Vacancy Report
+      </h1>
+
+      <p style={{ textAlign: "center" }}>
+        Month: {month} / {year}
+      </p>
+
+      <MonthSelector
+        month={month}
+        setMonth={setMonth}
+        year={year}
+        setYear={setYear}
+      />
+
+      <button onClick={() => window.print()}>Download Report</button>
+
+      <div className="card">
+        <DistrictSummary month={month} year={year} />
+      </div>
+
+      <div className="card">
+        <TalukaTable month={month} year={year} />
+      </div>
+
+      <div className="card">
+        <PendingTalukas month={month} year={year} />
+      </div>
     </div>
   );
 }
