@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "./supabase";
+import { API_BASE } from "./config";
 
 export default function TalukaForm({ talukaId }) {
   const [rows, setRows] = useState([]);     // ALWAYS array

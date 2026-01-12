@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { API_BASE } from "./config";
+
 
 export default function PendingTalukas() {
   const [list, setList] = useState([]);

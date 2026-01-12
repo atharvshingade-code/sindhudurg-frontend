@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { API_BASE } from "./config";
+
 
 export default function DistrictSummary() {
   const [data, setData] = useState(null);
