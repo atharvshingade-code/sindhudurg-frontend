@@ -56,7 +56,7 @@ export default function TalukaForm({ talukaId }) {
     return;
   }
 
-  const res = await fetch("${API_BASE}/taluka/submit", {
+  const res = await fetch(`${API_BASE}/taluka/submit`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

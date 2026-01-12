@@ -6,7 +6,7 @@ export default function PendingTalukas() {
   const [list, setList] = useState([]);
 
   useEffect(() => {
-    fetch("${API_BASE}/district/pending?month=10&year=2025")
+    fetch(`${API_BASE}/district/pending?month=10&year=2025`)
       .then(res => res.json())
       .then(setList);
   }, []);
