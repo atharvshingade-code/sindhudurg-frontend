@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { API_BASE } from "./config";
 
-
 export default function TalukaTable({ month, year }) {
   const [rows, setRows] = useState([]);
   const [totals, setTotals] = useState([]);
@@ -36,6 +35,7 @@ export default function TalukaTable({ month, year }) {
                 <th>Sanctioned</th>
                 <th>Filled</th>
                 <th>Vacant</th>
+                <th>Vacancy %</th>
               </tr>
             </thead>
 
@@ -48,6 +48,7 @@ export default function TalukaTable({ month, year }) {
                   <td style={{ color: r.vacant > 0 ? "red" : "green" }}>
                     {r.vacant}
                   </td>
+                  <td>{r.vacancy_percent}%</td>
                 </tr>
               ))}
 
@@ -59,6 +60,7 @@ export default function TalukaTable({ month, year }) {
                     <td>{t.total_sanctioned}</td>
                     <td>{t.total_filled}</td>
                     <td>{t.total_vacant}</td>
+                    <td>{t.vacancy_percent}%</td>
                   </tr>
                 ))}
             </tbody>
