@@ -19,6 +19,7 @@ function App() {
     window.location.reload();
   };
 
+  // Auth listener
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
       setUser(data.session?.user || null);
@@ -31,24 +32,18 @@ function App() {
     return () => listener.subscription.unsubscribe();
   }, []);
 
+  // Load profile after login
   useEffect(() => {
     if (!user) return;
 
-    supabase
-      .rpc("get_my_profile")
-      .then(({ data, error }) => {
-        if (error) console.error(error);
-        else setProfile(data[0]);
-      });
+    supabase.rpc("get_my_profile").then(({ data, error }) => {
+      if (error) console.error(error);
+      else setProfile(data[0]);
+    });
   }, [user]);
 
-  if (!user) {
-    return <Login setUser={setUser} />;
-  }
-
-  if (!profile) {
-    return <p>Loading profile…</p>;
-  }
+  if (!user) return <Login setUser={setUser} />;
+  if (!profile) return <p>Loading profile…</p>;
 
   // ---------------- TALUKA VIEW ----------------
   if (profile.role === "taluka") {
@@ -72,7 +67,19 @@ function App() {
 
         <h2>Taluka Monthly Data Entry</h2>
         <p>Taluka ID: {profile.taluka_id}</p>
-        <TalukaForm talukaId={profile.taluka_id} />
+
+        <MonthSelector
+          month={month}
+          setMonth={setMonth}
+          year={year}
+          setYear={setYear}
+        />
+
+        <TalukaForm
+          talukaId={profile.taluka_id}
+          month={month}
+          year={year}
+        />
       </div>
     );
   }
