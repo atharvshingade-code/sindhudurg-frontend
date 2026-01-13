@@ -7,6 +7,8 @@ import PendingTalukas from "./PendingTalukas";
 import MonthSelector from "./MonthSelector";
 import TalukaForm from "./TalukaForm";
 import "./App.css";
+import MonthLockControl from "./MonthLockControl";
+
 
 function App() {
   const [user, setUser] = useState(null);
@@ -118,6 +120,8 @@ function App() {
         year={year}
         setYear={setYear}
       />
+      <MonthLockControl month={month} year={year} />
+
 
       <button onClick={() => window.print()}>Download Report</button>
 
