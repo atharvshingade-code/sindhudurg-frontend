@@ -52,17 +52,24 @@ export default function TalukaTable({ month, year }) {
                 </tr>
               ))}
 
-              {totals
-                .filter(t => t.category === category)
-                .map((t, i) => (
-                  <tr key={i} style={{ fontWeight: "bold", background: "#eee" }}>
-                    <td>Total</td>
-                    <td>{t.total_sanctioned}</td>
-                    <td>{t.total_filled}</td>
-                    <td>{t.total_vacant}</td>
-                    <td>{t.vacancy_percent}%</td>
-                  </tr>
-                ))}
+              {(() => {
+  const t = totals.find(
+    x => x.category === category && x.month == month && x.year == year
+  );
+
+  if (!t) return null;
+
+  return (
+    <tr style={{ fontWeight: "bold", background: "#eee" }}>
+      <td>Total</td>
+      <td>{t.total_sanctioned}</td>
+      <td>{t.total_filled}</td>
+      <td>{t.total_vacant}</td>
+      <td>{t.vacancy_percent}%</td>
+    </tr>
+  );
+})()}
+
             </tbody>
           </table>
         </div>
