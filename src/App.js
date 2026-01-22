@@ -13,7 +13,7 @@ import MonthLockControl from "./MonthLockControl";
 function App() {
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
-  const [month, setMonth] = useState(10);
+  const [month, setMonth] = useState(null);
   const [year, setYear] = useState(2026);
 
   const logout = async () => {
