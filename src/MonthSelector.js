@@ -17,10 +17,10 @@ export default function MonthSelector({ month, setMonth, year, setYear }) {
 </select>
 
 
-      <select value={year} onChange={e => setYear(e.target.value)}>
-        <option value="2025">2025</option>
-        <option value="2026">2026</option>
-      </select>
+      <select value={year} onChange={e => setYear(Number(e.target.value))}>
+  <option value="2026">2026</option>
+</select>
+
     </div>
   );
 }
