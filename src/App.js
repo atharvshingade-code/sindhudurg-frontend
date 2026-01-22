@@ -3,7 +3,7 @@ import { supabase } from "./supabase";
 import Login from "./Login";
 import DistrictSummary from "./DistrictSummary";
 import TalukaTable from "./TalukaTable";
-import PendingTalukas from "./PendingTalukas";
+
 import MonthSelector from "./MonthSelector";
 import TalukaForm from "./TalukaForm";
 import MonthLockControl from "./MonthLockControl";
@@ -163,9 +163,7 @@ function App() {
             <TalukaTable month={month} year={year} />
           </div>
 
-          <div className="card">
-            <PendingTalukas month={month} year={year} />
-          </div>
+          
         </>
       )}
     </div>
