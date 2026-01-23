@@ -9,7 +9,11 @@ export default function DistrictSummary({ month, year }) {
 
     fetch(`${API_BASE}/district/summary?month=${month}&year=${year}`)
       .then(res => res.json())
-      .then(d => setData(d[0]));
+      .then(d => {
+        console.log("Summary data:", d);
+        setData(d); // ✅ NOT d[0]
+      })
+      .catch(err => console.error("Summary error:", err));
   }, [month, year]);
 
   if (!data) return <p>Loading summary...</p>;
@@ -20,10 +24,12 @@ export default function DistrictSummary({ month, year }) {
         <h3>Sanctioned</h3>
         <h1>{data.total_sanctioned}</h1>
       </div>
+
       <div>
         <h3>Filled</h3>
         <h1>{data.total_filled}</h1>
       </div>
+
       <div>
         <h3>Vacant</h3>
         <h1 style={{ color: "red" }}>{data.total_vacant}</h1>
