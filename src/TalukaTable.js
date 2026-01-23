@@ -3,16 +3,13 @@ import { API_BASE } from "./config";
 
 export default function TalukaTable({ month, year }) {
   const [rows, setRows] = useState([]);
-  const [totals, setTotals] = useState([]);
 
   useEffect(() => {
+    if (!month || !year) return;
+
     fetch(`${API_BASE}/district/report?month=${month}&year=${year}`)
       .then(r => r.json())
       .then(setRows);
-
-    fetch(`${API_BASE}/district/category-totals?month=${month}&year=${year}`)
-      .then(r => r.json())
-      .then(setTotals);
   }, [month, year]);
 
   // group rows by category
@@ -22,58 +19,73 @@ export default function TalukaTable({ month, year }) {
     return acc;
   }, {});
 
+  // calculate totals per category
+  const categoryTotals = {};
+
+  rows.forEach(r => {
+    if (!categoryTotals[r.category]) {
+      categoryTotals[r.category] = {
+        sanctioned: 0,
+        filled: 0,
+        vacant: 0
+      };
+    }
+
+    categoryTotals[r.category].sanctioned += r.sanctioned;
+    categoryTotals[r.category].filled += r.filled;
+    categoryTotals[r.category].vacant += r.vacant;
+  });
+
   return (
     <div>
-      {Object.keys(grouped).map(category => (
-        <div key={category} className="category-block">
-          <h3 className="category-title">{category}</h3>
+      {Object.keys(grouped).map(category => {
+        const total = categoryTotals[category];
+        const vacancyPercent =
+          total.sanctioned === 0
+            ? 0
+            : ((total.vacant / total.sanctioned) * 100).toFixed(2);
 
-          <table className="data-table" border="1">
-            <thead>
-              <tr>
-                <th>Taluka</th>
-                <th>Sanctioned</th>
-                <th>Filled</th>
-                <th>Vacant</th>
-                <th>Vacancy %</th>
-              </tr>
-            </thead>
+        return (
+          <div key={category} className="category-block">
+            <h3 className="category-title">{category}</h3>
 
-            <tbody>
-              {grouped[category].map((r, i) => (
-                <tr key={i}>
-                  <td>{r.taluka}</td>
-                  <td>{r.sanctioned}</td>
-                  <td>{r.filled}</td>
-                  <td style={{ color: r.vacant > 0 ? "red" : "green" }}>
-                    {r.vacant}
-                  </td>
-                  <td>{r.vacancy_percent}%</td>
+            <table className="data-table" border="1">
+              <thead>
+                <tr>
+                  <th>Taluka</th>
+                  <th>Sanctioned</th>
+                  <th>Filled</th>
+                  <th>Vacant</th>
+                  <th>Vacancy %</th>
                 </tr>
-              ))}
+              </thead>
 
-              {(() => {
-  const t = totals.find(
-    x => x.category === category && x.month == month && x.year == year
-  );
+              <tbody>
+                {grouped[category].map((r, i) => (
+                  <tr key={i}>
+                    <td>{r.taluka}</td>
+                    <td>{r.sanctioned}</td>
+                    <td>{r.filled}</td>
+                    <td style={{ color: r.vacant > 0 ? "red" : "green" }}>
+                      {r.vacant}
+                    </td>
+                    <td>{r.vacancy_percent}%</td>
+                  </tr>
+                ))}
 
-  if (!t) return null;
-
-  return (
-    <tr style={{ fontWeight: "bold", background: "#eee" }}>
-      <td>Total</td>
-      <td>{t.total_sanctioned}</td>
-      <td>{t.total_filled}</td>
-      <td>{t.total_vacant}</td>
-      <td>{t.vacancy_percent}%</td>
-    </tr>
-  );
-})()}
-
-            </tbody>
-          </table>
-        </div>
-      ))}
+                {/* TOTAL ROW */}
+                <tr style={{ fontWeight: "bold", background: "#f2f2f2" }}>
+                  <td>Total</td>
+                  <td>{total.sanctioned}</td>
+                  <td>{total.filled}</td>
+                  <td>{total.vacant}</td>
+                  <td>{vacancyPercent}%</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        );
+      })}
     </div>
   );
 }
