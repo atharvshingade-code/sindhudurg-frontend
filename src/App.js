@@ -155,9 +155,9 @@ function App() {
             Download Report
           </button>
 
-          <div className="card">
+          {/*<div className="card">
             <DistrictSummary month={month} year={year} />
-          </div>
+          </div>*/}
 
           <div className="card">
             <TalukaTable month={month} year={year} />
