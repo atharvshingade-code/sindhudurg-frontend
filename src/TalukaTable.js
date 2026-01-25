@@ -31,19 +31,23 @@ export default function TalukaTable({ month, year }) {
       };
     }
 
-    categoryTotals[r.category].sanctioned += r.sanctioned;
-    categoryTotals[r.category].filled += r.filled;
-    categoryTotals[r.category].vacant += r.vacant;
+    categoryTotals[r.category].sanctioned += Number(r.sanctioned || 0);
+    categoryTotals[r.category].filled += Number(r.filled || 0);
+    categoryTotals[r.category].vacant += Number(r.vacant || 0);
   });
 
   return (
     <div>
       {Object.keys(grouped).map(category => {
         const total = categoryTotals[category];
+
         const vacancyPercent =
           total.sanctioned === 0
             ? 0
-            : ((total.vacant / total.sanctioned) * 100).toFixed(2);
+            : Math.max(
+                0,
+                (total.vacant / total.sanctioned) * 100
+              ).toFixed(2);
 
         return (
           <div key={category} className="category-block">
@@ -69,7 +73,9 @@ export default function TalukaTable({ month, year }) {
                     <td style={{ color: r.vacant > 0 ? "red" : "green" }}>
                       {r.vacant}
                     </td>
-                    <td>{r.vacancy_percent}%</td>
+                    <td>
+                      {Math.max(0, Number(r.vacancy_percent || 0)).toFixed(2)}%
+                    </td>
                   </tr>
                 ))}
 
